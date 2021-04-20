@@ -13,6 +13,8 @@ var gameState = PLAY;
 var score = 0;
 var timer = 2;
 
+var randX = 700;
+
 function preload() {
   backGroundImage = loadImage("background.png");
   platformImage = loadImage("dotted rectangle.png");
@@ -33,17 +35,18 @@ function setup() {
 
   backGround = createSprite(200,132,20,20);
   backGround.addImage(backGroundImage);
-  backGround.velocityX = -8;
+  //backGround.velocityX = -8;
 
   invisibleGround = createSprite(300,183,950,6);
   invisibleGround.visible = false;
-  invisibleGround.velocityX = -8;
+  //invisibleGround.velocityX = -8;
 
   runner = createSprite(40,140,20,20);
   runner.addAnimation("active",runnerActive);
   runner.addAnimation("jump",runnerJump);
   runner.addAnimation("end",runnerEnd);
   runner.scale = 0.3;
+  runner.velocityX = 6;
 
   gameOver = createSprite(300,50,20,20);
   gameOver.addImage(gameOverImage);
@@ -59,17 +62,20 @@ function draw() {
   background("white");
 
   textSize(18);
-  text("Score: " + score,500,20);
-  text("Timer: " + timer,500,40);
+  text("Score: " + score, runner.x + 20, runner.y - 10);
+  text("Timer: " + timer, runner.x + 20, runner.y + 10);
+
+  camera.position.x = runner.x;
+  camera.position.y = runner.y;
 
   if(keyWentDown("UP") && gameState === PLAY){
     runner.velocityY = -12;
   }else if(keyDown("RIGHT") && gameState === PLAY){
     runner.x = runner.x + 6;
   }else if(keyDown("LEFT") && gameState === PLAY){
-    runner.x = runner.x - 6;
+    runner.x = runner.x - 12;
   }else{
-    runner.velocityX = 0;
+    runner.velocityX = 6;
   }
 
   if(gameState === PLAY){
@@ -97,15 +103,19 @@ function draw() {
     }
 
   }else if(gameState === END){
+    gameOver.x = runner.x;
+    gameOver.y = runner.y - 50;
     gameOver.visible = true;
+    restart.x = runner.x;
+    restart.y = runner.y + 30;
     restart.visible = true;
 
     runner.velocityY = 0;
     runner.velocityX = 0;
-    backGround.velocityX = 0;
-    invisibleGround.velocityX = 0;
-    platformGroup.setVelocityXEach(0);
-    invisiblePlatformGroup.setVelocityXEach(0);
+    //backGround.velocityX = 0;
+    //invisibleGround.velocityX = 0;
+    //platformGroup.setVelocityXEach(0);
+    //invisiblePlatformGroup.setVelocityXEach(0);
     
     runner.changeAnimation("end",runnerEnd);
     
@@ -124,18 +134,20 @@ function spawnPlatform(){
   if(frameCount % 30 === 0){
     var randY = Math.round(random(100,160));
 
-    platform = createSprite(700,randY,20,20);
+    platform = createSprite(randX,randY,20,20);
     platform.addImage(platformImage);
     platform.scale = 0.07;
-    platform.velocityX = -8;
-    platform.lifetime = 100;
+    //platform.velocityX = -8;
+    platform.lifetime = 300;
     platformGroup.add(platform);
 
-    invisiblePlatform = createSprite(700,randY + 5,90,10);
+    invisiblePlatform = createSprite(randX,randY + 5,90,10);
     invisiblePlatform.visible = false;
-    invisiblePlatform.velocityX = -8;
-    invisiblePlatform.lifetime = 100;
+    //invisiblePlatform.velocityX = -8;
+    invisiblePlatform.lifetime = 300;
     invisiblePlatformGroup.add(invisiblePlatform);
+
+    randX += 240;
   }
 }
 
@@ -150,13 +162,15 @@ function reset(){
   
   runner.x = 40;
   runner.y = 140;
+  runner.velocityX = 6;
   runner.changeAnimation("active",runnerActive);
 
   backGround.x = 200;
   invisibleGround.x = 200;
-  backGround.velocityX = -8;
-  invisibleGround.velocityX = -8;
+  //backGround.velocityX = -8;
+  //invisibleGround.velocityX = -8;
 
   score = 0;
   timer = 2;
+  randX = 700;
 }
